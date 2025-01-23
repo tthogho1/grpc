@@ -19,7 +19,7 @@ func main() {
 	}
 
 	// サーバーへの接続を確立
-	conn, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Failed to connect: %v", err)
 	}
@@ -43,10 +43,15 @@ func main() {
 		Filename:  os.Args[1],
 	}
 
+	// 開始時間を取得
+	startTime := time.Now()
 	resp, err := client.GetEmbedding(ctx, req)
 	if err != nil {
 		log.Fatalf("Failed to get embedding: %v", err)
 	}
+
+	endTime := time.Now()
+	fmt.Printf("Elapsed time: %v\n", endTime.Sub(startTime))
 
 	if !resp.Success {
 		log.Fatalf("Server error: %s", resp.Error)
